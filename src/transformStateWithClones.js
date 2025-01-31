@@ -8,38 +8,36 @@
  */
 function transformStateWithClones(state, actions) {
   const FINAL_RESULT = [];
-  let NEXT_STATE = { ...state };
+  let NEXT_STATE = { ...state }; // Clone the original state to start with
 
   for (const action of actions) {
-    let newState;
-
     switch (action.type) {
       case 'addProperties':
-        newState = { ...NEXT_STATE, ...action.extraData };
-
-        FINAL_RESULT.push({ ...newState });
-        NEXT_STATE = newState;
+        // Create a new object by merging the current state with extra data
+        NEXT_STATE = { ...NEXT_STATE, ...action.extraData };
         break;
 
       case 'removeProperties':
-        newState = { ...NEXT_STATE };
+        // Create a new state where the properties are removed
+        const NEXT_STATE1 = { ...NEXT_STATE };
 
         for (const keyToRemove of action.keysToRemove) {
-          delete newState[keyToRemove];
+          delete NEXT_STATE1[keyToRemove];
         }
-        FINAL_RESULT.push({ ...newState });
-        NEXT_STATE = newState;
+        NEXT_STATE = NEXT_STATE1; // Update NEXT_STATE to the new state
         break;
 
       case 'clear':
-        newState = {};
-        FINAL_RESULT.push({ ...newState });
-        NEXT_STATE = newState;
+        // Set the state to an empty object (clearing it)
+        NEXT_STATE = {};
         break;
 
       default:
         break;
     }
+
+    // Push a fresh clone of the current state after each transformation
+    FINAL_RESULT.push({ ...NEXT_STATE });
   }
 
   return FINAL_RESULT;
